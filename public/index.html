@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>File Compressor — Compress PDF, JPG & PNG Files</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-icon">🗜️</div>
+    <div>
+      <h1>File Compressor</h1>
+      <p>Compress PDF, JPG &amp; PNG Files</p>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <button id="themeToggle" class="icon-btn" title="Toggle theme">🌙</button>
+    <select id="langSelect" class="lang-select">
+      <option>English</option>
+    </select>
+    <button class="icon-btn help-btn">❓ Help</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="card upload-card">
+    <h2 class="center-title">Compress Your Files</h2>
+    <p class="center-sub">Upload, compress and download your files easily</p>
+
+    <div class="dropzone" id="dropzone">
+      <div class="upload-options">
+        <label class="upload-option" for="pdfInput">
+          <span class="upload-icon pdf">📄</span>
+          <strong>Upload PDF</strong>
+          <span class="muted">.pdf</span>
+        </label>
+        <label class="upload-option" for="jpgInput">
+          <span class="upload-icon jpg">🖼️</span>
+          <strong>Upload JPG</strong>
+          <span class="muted">.jpg / .jpeg</span>
+        </label>
+        <label class="upload-option" for="pngInput">
+          <span class="upload-icon png">🖼️</span>
+          <strong>Upload PNG</strong>
+          <span class="muted">.png</span>
+        </label>
+      </div>
+
+      <input type="file" id="pdfInput" accept="application/pdf" hidden />
+      <input type="file" id="jpgInput" accept="image/jpeg" hidden />
+      <input type="file" id="pngInput" accept="image/png" hidden />
+
+      <p class="drag-hint">⬆ or Drag &amp; Drop Files Here</p>
+      <p class="muted small">Maximum file size: 200MB</p>
+    </div>
+  </section>
+
+  <section class="stats-grid">
+    <div class="card stat-card">
+      <div class="stat-icon blue">📄</div>
+      <div>
+        <div class="stat-value" id="statFiles">0</div>
+        <div class="stat-label">Files Compressed</div>
+      </div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-icon green">🥧</div>
+      <div>
+        <div class="stat-value" id="statStorage">0 MB</div>
+        <div class="stat-label">Storage Saved</div>
+      </div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-icon orange">📈</div>
+      <div>
+        <div class="stat-value" id="statAvg">0%</div>
+        <div class="stat-label">Average Compression</div>
+      </div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-icon purple">🕐</div>
+      <div>
+        <div class="stat-value" id="statToday">0</div>
+        <div class="stat-label">Today's Files</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="currentFileCard" style="display:none;">
+    <div class="section-header">
+      <h3>Current File</h3>
+      <button class="btn btn-outline" id="replaceFileBtn">↻ Replace File</button>
+    </div>
+
+    <div class="current-file-row">
+      <div class="file-icon-badge" id="currentFileIcon">📄</div>
+      <div class="current-file-info">
+        <strong id="currentFileName">—</strong>
+        <div class="file-meta">
+          <span id="currentFileSize" class="pill">0 MB</span>
+          <span id="currentFilePages" class="pill" style="display:none;">0 Pages</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-wrap" id="progressWrap" style="display:none;">
+      <div class="progress-label">
+        <span id="progressStatus">Uploading...</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-sub">
+        <span id="progressSpeed"></span>
+        <span id="progressRemaining"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="settingsCard" style="display:none;">
+    <h3>Compression Settings</h3>
+    <div class="settings-grid">
+      <div class="settings-col">
+        <div class="settings-label">Original Size</div>
+        <div class="original-size" id="originalSizeVal">0 MB</div>
+      </div>
+
+      <div class="settings-col settings-slider-col">
+        <div class="settings-label center">Compression Level <span class="qmark" title="Higher quality = larger file">?</span></div>
+        <div class="slider-row">
+          <span class="muted">Lowest</span>
+          <input type="range" id="qualitySlider" min="1" max="100" value="72" />
+          <span class="muted">Highest</span>
+        </div>
+        <div class="quality-pill-wrap"><span class="quality-pill" id="qualityLabel">Quality: 72%</span></div>
+      </div>
+
+      <div class="settings-col settings-estimate-col">
+        <div class="settings-label">Estimated Size</div>
+        <div class="estimated-size" id="estimatedSizeVal">0 MB</div>
+        <div class="settings-label small-top">Estimated Reduction</div>
+        <div class="reduction-pill" id="estimatedReduction">0%</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-block" id="compressBtn">⚙ Compress File</button>
+  </section>
+
+  <section class="card history-card">
+    <div class="section-header">
+      <h3>Compression History</h3>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-type="pdf">📄 PDF</button>
+      <button class="tab" data-type="jpg">🖼️ JPG</button>
+      <button class="tab" data-type="png">🖼️ PNG</button>
+    </div>
+
+    <div class="history-controls">
+      <input type="text" id="searchInput" placeholder="Search file name..." />
+      <input type="date" id="dateFilter" title="Filter by date" />
+      <button class="icon-btn" id="clearDateBtn" title="Clear date filter">✕</button>
+      <button class="icon-btn" id="refreshBtn">⟳</button>
+    </div>
+
+    <div class="table-scroll">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>File Name</th>
+            <th>Uploaded</th>
+            <th>Original Size</th>
+            <th>Compressed Size</th>
+            <th>Saved</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody">
+          <tr><td colspan="6" class="empty-row">No files yet — upload one above to get started.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">© 2026 File Compressor. All rights reserved.</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
